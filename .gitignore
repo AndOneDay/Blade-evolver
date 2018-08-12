@@ -103,7 +103,7 @@ venv.bak/
 .mypy_cache/
 
 # runtime
-avatest.conf
+account.conf
 runtime_*/  
 tools/qshell
 tools/qhash_proxy

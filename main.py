@@ -36,6 +36,7 @@ try:
         account = json.load(f)
 except:
     logger.error('Load account configuration failed.')
+    sys.exit()
 AK = account['AK'] 
 SK = account['SK']
 LOG_LEVEL = 'INFO'
@@ -43,9 +44,10 @@ LOG_PATH = 'runtime_log'
 CACHE_PATH = 'runtime_cache'
 CUR_TIME = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
 CUR_DATE = datetime.datetime.now().strftime('%Y-%m-%d')
-# YEST_DATE = (datetime.datetime.now() - datetime.timedelta(1)).strftime('%Y-%m-%d')
-YEST_DATE = '2018-07-03'
-BEF_YEST_DATE = '2018-07-02'
+YEST_DATE = (datetime.datetime.now() - datetime.timedelta(1)).strftime('%Y-%m-%d')
+# YEST_DATE = '2018-07-03'
+BEF_YEST_DATE = (datetime.datetime.now() - datetime.timedelta(2)).strftime('%Y-%m-%d')
+# BEF_YEST_DATE = '2018-07-02'
 
 # mutable params
 CHECK_INTERVAL = 5      # second 
@@ -73,14 +75,15 @@ class generic_error():
 def _init_():
     """
     "Blade-evolver" self-iterating system 
-    Update: 2018/08/09
+    Update: 2018/08/12
     Contributor:
 
     Change log:
+    2018/08/12      v1.1                support manual mode 
     2018/08/09      v1.0                basic functions
 
     Usage:
-        main.py                         [-c|--cleanup]
+        main.py                         [-c|--cleanup] [--manual=str]
         main.py                         -v|--version
         main.py                         -h|--help
 
@@ -90,8 +93,10 @@ def _init_():
         -h --help                       show this screen
         -v --version                    show script version
         -c --cleanup                    just clean up cache dir
-        -------------------------------------------------------
-
+        ------------------------------------------------------------------
+        --manual=str                    manually run process, original log  
+                                        need to be pre-downloaded. input 
+                                        date syntax: 2018-08-12
     """
     # config logger
     logger.setLevel(eval('logging.' + LOG_LEVEL))
@@ -109,39 +114,51 @@ def _init_():
 
 
 def whole_routine():
-    # # ---- phase 1 ----
-    # logger.info('PHASE[1] => fetching original log')
-    # logger.info('Creating log_proxy configuration...')
-    # conf_path = os.path.join(cur_path, CACHE_PATH, 'log_proxy_{}.conf'.format(YEST_DATE))
-    # exec_path = os.path.join(cur_path, 'tools', 'log_proxy')
-    # jobid_path = os.path.join(cur_path, CACHE_PATH, 'job_id.log')
-    # create_conf(YEST_DATE, (AK,SK), ORI_LOG_NAME, conf_path=conf_path)
-    # logger.info('Submitting log_proxy job...')
-    # submit_ret = submit_job(exec_path, conf_path, jobid_path)
-    # if not submit_ret:
-    #     logger.error('Submitting log_proxy job failed, try to check exec file exsistance or permission')
-    #     return 0
-    # else:
-    #     logger.info('\n'+submit_ret)
-    # checkpoint = 0
-    # checkflag = False
-    # while(checkpoint<(float(MAX_CHECK_TIME)/CHECK_INTERVAL)):
-    #     checkpoint += 1
-    #     job_id, check_ret = check_job(exec_path, conf_path, jobid_path)
-    #     if checkpoint == 1:
-    #         logger.info('Checking log_proxy job status...')
-    #         logger.info('Job id -> {}'.format(job_id))
-    #     logger.info('Checkpoint[{}] -> {}'.format(checkpoint, check_ret))
-    #     if check_ret == 'done':
-    #         checkflag = True
-    #         break
-    #     time.sleep(CHECK_INTERVAL)
-    # if checkflag:
-    #     logger.info('PHASE[1] => success.')
-    # else:
-    #     logger.error('PHASE[1] => timeout.')
-    #     return 0
-    
+    global YEST_DATE, BEF_YEST_DATE
+    # initialization date
+    if args['--manual']:
+        temp_date = args['--manual'].split('-')
+        assert len(temp_date) == 3, logger.error('Manual date syntax error')
+        YEST_DATE = datetime.date(int(temp_date[0]),int(temp_date[1]),int(temp_date[2])).strftime('%Y-%m-%d')
+        BEF_YEST_DATE = datetime.date(int(temp_date[0]),int(temp_date[1]),int(temp_date[2])).strftime('%Y-%m-%d')
+    logger.info('Processing date: {}'.format(YEST_DATE))
+
+    # ---- phase 1 ----
+    logger.info('PHASE[1] => fetching original log')
+    if not args['--manual']:
+        logger.info('Creating log_proxy configuration...')
+        conf_path = os.path.join(cur_path, CACHE_PATH, 'log_proxy_{}.conf'.format(YEST_DATE))
+        exec_path = os.path.join(cur_path, 'tools', 'log_proxy')
+        jobid_path = os.path.join(cur_path, CACHE_PATH, 'job_id.log')
+        create_conf(YEST_DATE, (AK,SK), ORI_LOG_NAME, conf_path=conf_path)
+        logger.info('Submitting log_proxy job...')
+        submit_ret = submit_job(exec_path, conf_path, jobid_path)
+        if not submit_ret:
+            logger.error('Submitting log_proxy job failed, try to check exec file exsistance or permission')
+            return 0
+        else:
+            logger.info('\n'+submit_ret)
+        checkpoint = 0
+        checkflag = False
+        while(checkpoint<(float(MAX_CHECK_TIME)/CHECK_INTERVAL)):
+            checkpoint += 1
+            job_id, check_ret = check_job(exec_path, conf_path, jobid_path)
+            if checkpoint == 1:
+                logger.info('Checking log_proxy job status...')
+                logger.info('Job id -> {}'.format(job_id))
+            logger.info('Checkpoint[{}] -> {}'.format(checkpoint, check_ret))
+            if check_ret == 'done':
+                checkflag = True
+                break
+            time.sleep(CHECK_INTERVAL)
+        if checkflag:
+            logger.info('PHASE[1] => success.')
+        else:
+            logger.error('PHASE[1] => timeout.')
+            return 0
+    else:
+        logger.info('PHASE[1] skipped under manual mode')
+
     # ---- phase 2 ----
     logger.info('PHASE[2] => downloading original log file')
     exec_path = os.path.join(cur_path, 'tools', 'qshell')
