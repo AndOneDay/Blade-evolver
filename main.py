@@ -50,19 +50,18 @@ BEF_YEST_DATE = (datetime.datetime.now() - datetime.timedelta(2)).strftime('%Y-%
 # BEF_YEST_DATE = '2018-07-02'
 
 # mutable params
-CHECK_INTERVAL = 5      # second 
-MAX_CHECK_TIME = 3600   # second
+CHECK_INTERVAL = 600      # second 
+MAX_CHECK_TIME = 7200   # second
 REMOTE_IMG_PREFIX = 'http://oquqvdmso.bkt.clouddn.com/atflow-log-proxy/images/'
 ORI_LOG_BKT = 'qpulp-log'
 ORI_LOG_DOM = 'http://p4yeqgehs.bkt.clouddn.com'
-ORI_LOG_NAME = 'qpulp_origin_{}.json'.format(''.join(YEST_DATE.split('-')))
+# ORI_LOG_NAME = 'qpulp_origin_{}.json'.format(''.join(YEST_DATE.split('-')))
 FLT_LOG_BKT = 'qpulp-pulp-list'
-FLT_LOG_NAME = 'pulp_{}.lst'.format(''.join(YEST_DATE.split('-')))
+# FLT_LOG_NAME = 'pulp_{}.lst'.format(''.join(YEST_DATE.split('-')))
 DEP_FILE_BKT = 'qpulp-depot'
 DEP_FILE_DOM = 'http://p66q12vsa.bkt.clouddn.com'
-DEP_FILE_NAME = 'base_depot_DailyDiary_{}.json'.format(''.join(BEF_YEST_DATE.split('-')))
-UPD_DEP_FILE_NAME = 'base_depot_DailyDiary_{}.json'.format(''.join(YEST_DATE.split('-')))
-
+# DEP_FILE_NAME = 'base_depot_DailyDiary_{}.json'.format(''.join(BEF_YEST_DATE.split('-')))
+# UPD_DEP_FILE_NAME = 'base_depot_DailyDiary_{}.json'.format(''.join(YEST_DATE.split('-')))
 
 
 class generic_error():
@@ -75,10 +74,11 @@ class generic_error():
 def _init_():
     """
     "Blade-evolver" self-iterating system 
-    Update: 2018/08/12
+    Update: 2018/08/13
     Contributor:
 
     Change log:
+    2018/08/13      v1.2                fix manual bug 
     2018/08/12      v1.1                support manual mode 
     2018/08/09      v1.0                basic functions
 
@@ -120,8 +120,13 @@ def whole_routine():
         temp_date = args['--manual'].split('-')
         assert len(temp_date) == 3, logger.error('Manual date syntax error')
         YEST_DATE = datetime.date(int(temp_date[0]),int(temp_date[1]),int(temp_date[2])).strftime('%Y-%m-%d')
-        BEF_YEST_DATE = datetime.date(int(temp_date[0]),int(temp_date[1]),int(temp_date[2])).strftime('%Y-%m-%d')
+        BEF_YEST_DATE = (datetime.date(int(temp_date[0]),int(temp_date[1]),int(temp_date[2])) - datetime.timedelta(1)).strftime('%Y-%m-%d')
+    ORI_LOG_NAME = 'qpulp_origin_{}.json'.format(''.join(YEST_DATE.split('-')))
+    FLT_LOG_NAME = 'pulp_{}.lst'.format(''.join(YEST_DATE.split('-')))
+    DEP_FILE_NAME = 'base_depot_DailyDiary_{}.json'.format(''.join(BEF_YEST_DATE.split('-')))
+    UPD_DEP_FILE_NAME = 'base_depot_DailyDiary_{}.json'.format(''.join(YEST_DATE.split('-')))
     logger.info('Processing date: {}'.format(YEST_DATE))
+    # logger.info('Processing date: {}'.format(BEF_YEST_DATE))
 
     # ---- phase 1 ----
     logger.info('PHASE[1] => fetching original log')
@@ -177,6 +182,7 @@ def whole_routine():
     bkt_file_list = load_bkt(lstbkt_path)
     logger.info('{} files found.'.format(len(bkt_file_list)))
     if ORI_LOG_NAME not in bkt_file_list:
+        print(ORI_LOG_NAME)
         logger.error('Original log file not found.')
         return 0
     logger.info('Downloading original log file...')

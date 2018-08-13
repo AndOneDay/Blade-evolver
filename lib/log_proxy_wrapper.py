@@ -19,8 +19,8 @@ def create_conf(date, aksk, log_fname, conf_path='./log_proxy.conf'):
         f.write('[params]\n')
         f.write('cmd = pulp\n')
         f.write('start_time = {}T00:00:00\n'.format(date))
-        f.write('end_time = {}T00:09:59\n'.format(date))    # debugging
-        # f.write('end_time = {}T23:59:59\n'.format(date))
+        # f.write('end_time = {}T00:09:59\n'.format(date))    # debugging
+        f.write('end_time = {}T23:59:59\n'.format(date))
         f.write('uid = \n')
         f.write('key = {}\n'.format(log_fname))
         f.write('bucket = qpulp-log\n')
