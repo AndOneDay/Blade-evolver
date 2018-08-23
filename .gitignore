@@ -108,4 +108,5 @@ runtime_*/
 tools/qshell
 tools/qhash_proxy
 tools/log_proxy
+*.out
 
