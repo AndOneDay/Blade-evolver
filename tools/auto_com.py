@@ -10,7 +10,7 @@ def main():
     '''
     while start_date_str != end_date_str:
         print('fetch date', start_date_str)
-        os.system('python main.py --manual=' + start_date_str)
+        os.system('python ../main.py --manual=' + start_date_str)
         start_time = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
         start_time += datetime.timedelta(days = 1)
         start_date_str = datetime.datetime.strftime(start_time, '%Y-%m-%d')
