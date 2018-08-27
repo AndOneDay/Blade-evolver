@@ -198,8 +198,8 @@ def whole_routine():
     #     logger.error('Filter image list failed.')
     #     return 0
     # logger.info('Filtered {} images.'.format(len(filtered_list)))
-    # temp_file = os.path.join(CACHE_PATH, '_temp_pulp_img.lst')
-    # temp_hash = os.path.join(CACHE_PATH, '_temp_pulp_hash.json')
+    temp_file = os.path.join(CACHE_PATH, '_temp_pulp_img.lst')
+    temp_hash = os.path.join(CACHE_PATH, '_temp_pulp_hash.json')
     # with open(temp_file, 'w') as f:
     #     for line in filtered_list:
     #         f.write('{}\n'.format(line))
