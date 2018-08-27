@@ -133,6 +133,11 @@ def whole_routine():
     logger.info('Processing date: {}'.format(YEST_DATE))
     # logger.info('Processing date: {}'.format(BEF_YEST_DATE))
 
+    #login qshell
+    exec_path = os.path.join(cur_path, 'tools', 'qshell')
+    if log_in(exec_path, (AK,SK)):
+        logger.error('Logging failed.')
+        return 0
     # ---- phase 1 ----
     logger.info('PHASE[1] => fetching original log')
     if not file_exist('qshell', ORI_LOG_NAME, ORI_LOG_BKT):
@@ -230,10 +235,10 @@ def file_exist(tool, bkt_file_name, bkt_name):
     logger.info('Checking log exsistance...')
     lstbkt_path = os.path.join(CACHE_PATH, bkt_name + '.listbucket')
     exec_path = os.path.join(cur_path, 'tools', tool)
-    logger.info('Login qshell...')
-    if log_in(exec_path, (AK, SK)):
-        logger.error('Logging failed.')
-        return False
+    # logger.info('Login qshell...')
+    # if log_in(exec_path, (AK, SK)):
+    #     logger.error('Logging failed.')
+    #     return False
     if list_bkt(exec_path, lstbkt_path, bucket=bkt_name):
         logger.error('Listing bucket failed.')
         return False
