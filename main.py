@@ -172,7 +172,7 @@ def whole_routine():
             logger.error('PHASE[1] => timeout.')
             return 0
     else:
-        logger.info('PHASE[1] skipped under manual mode')
+        logger.info('PHASE[1] skipped because ori_log exist')
 
     # ---- phase 2 ----
     logger.info('PHASE[2] => downloading original log file')
@@ -182,7 +182,7 @@ def whole_routine():
         logger.error('Logging failed.')
         return 0
     logger.info('Logged with {}'.format(commands.getoutput('{} account|grep AccessKey'.format(exec_path))))
-    logger.info('Checking log exsistance...')
+    #logger.info('Checking log exsistance...')
     if not file_exist('qshell', ORI_LOG_NAME, ORI_LOG_BKT):
         return 0
     logger.info('Downloading original log file...')
@@ -239,7 +239,7 @@ def file_exist(tool, bkt_file_name, bkt_name):
     # if log_in(exec_path, (AK, SK)):
     #     logger.error('Logging failed.')
     #     return False
-    if list_bkt(exec_path, lstbkt_path, bucket=bkt_name):
+    if list_bkt(exec_path, bkt_file_name, bucket=bkt_name):
         logger.error('Listing bucket failed.')
         return False
     logger.info('Saved listbucket result file as {}'.format(lstbkt_path))
