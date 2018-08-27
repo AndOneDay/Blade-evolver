@@ -83,7 +83,7 @@ def _init_():
     2018/08/09      v1.0                basic functions
 
     Usage:
-        main.py                         [-c|--cleanup] [--manual=str --cls]
+        main.py                         [-c|--cleanup] [--manual=str --cls=str]
         main.py                         -v|--version
         main.py                         -h|--help
 
@@ -98,7 +98,6 @@ def _init_():
                                         need to be pre-downloaded. input 
                                         date syntax: 2018-08-12
         --cls=str                       [default: pulp]
-                                        qpulp log class to filter, e.g. pulp normal
     """
     # config logger
     logger.setLevel(eval('logging.' + LOG_LEVEL))
