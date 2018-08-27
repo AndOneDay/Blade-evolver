@@ -186,24 +186,24 @@ def whole_routine():
     if not file_exist('qshell', ORI_LOG_NAME, ORI_LOG_BKT):
         return 0
     logger.info('Downloading original log file...')
-    if not ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME, CACHE_PATH):
-        logger.error('Downloading failed.')
-        return 0
+    # if not ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME, CACHE_PATH):
+    #     logger.error('Downloading failed.')
+    #     return 0
     logger.info('PHASE[2] => success.')
 
     # ---- phase 3 ----
     logger.info('PHASE[3] => filtering interestesd logs and do deduplication')
-    filtered_list = log_filter(os.path.join(CACHE_PATH, ORI_LOG_NAME))
-    if not filtered_list:
-        logger.error('Filter image list failed.')
-        return 0
-    logger.info('Filtered {} images.'.format(len(filtered_list)))
-    temp_file = os.path.join(CACHE_PATH, '_temp_pulp_img.lst')
-    temp_hash = os.path.join(CACHE_PATH, '_temp_pulp_hash.json')
-    with open(temp_file, 'w') as f:
-        for line in filtered_list:
-            f.write('{}\n'.format(line))
-    logger.info('Filtered image-list saved as ' + temp_file)
+    # filtered_list = log_filter(os.path.join(CACHE_PATH, ORI_LOG_NAME))
+    # if not filtered_list:
+    #     logger.error('Filter image list failed.')
+    #     return 0
+    # logger.info('Filtered {} images.'.format(len(filtered_list)))
+    # temp_file = os.path.join(CACHE_PATH, '_temp_pulp_img.lst')
+    # temp_hash = os.path.join(CACHE_PATH, '_temp_pulp_hash.json')
+    # with open(temp_file, 'w') as f:
+    #     for line in filtered_list:
+    #         f.write('{}\n'.format(line))
+    # logger.info('Filtered image-list saved as ' + temp_file)
     logger.info('Checking depot file exsistance...')
     #add list depot to check yesterday depot file exsist
     if not file_exist('qshell', DEP_FILE_NAME, DEP_FILE_BKT):
@@ -239,7 +239,7 @@ def file_exist(tool, bkt_file_name, bkt_name):
     # if log_in(exec_path, (AK, SK)):
     #     logger.error('Logging failed.')
     #     return False
-    if list_bkt(exec_path, bkt_file_name, bucket=bkt_name):
+    if list_bkt(exec_path, lstbkt_path, bucket=bkt_name):
         logger.error('Listing bucket failed.')
         return False
     logger.info('Saved listbucket result file as {}'.format(lstbkt_path))
