@@ -115,7 +115,7 @@ def _init_():
 
 
 def whole_routine():
-    assert args.cls in ['pulp', 'nornal'], 'only pulp or normal class support'
+    assert args['--cls'] in ['pulp', 'nornal'], 'only pulp or normal class support'
     global YEST_DATE, BEF_YEST_DATE
     # initialization date
     if args['--manual']:
