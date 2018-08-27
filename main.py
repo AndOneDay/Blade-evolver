@@ -125,7 +125,7 @@ def whole_routine():
         BEF_YEST_DATE = (datetime.date(int(temp_date[0]),int(temp_date[1]),int(temp_date[2])) - datetime.timedelta(1)).strftime('%Y-%m-%d')
 
     ORI_LOG_NAME = 'qpulp_origin_{}.json'.format(''.join(YEST_DATE.split('-')))
-    FLT_LOG_NAME = '{}_{}.lst'.format(args.cls, ''.join(YEST_DATE.split('-')))
+    FLT_LOG_NAME = '{}_{}.lst'.format(args['--cls'], ''.join(YEST_DATE.split('-')))
     # if args.cls == 'normal':
     #     FLT_LOG_NAME = 'normal_{}.lst'.format(''.join(YEST_DATE.split('-')))
     DEP_FILE_NAME = 'base_depot_DailyDiary_{}.json'.format(''.join(BEF_YEST_DATE.split('-')))
