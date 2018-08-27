@@ -206,7 +206,7 @@ def whole_routine():
     logger.info('Filtered image-list saved as ' + temp_file)
     logger.info('Checking depot file exsistance...')
     #add list depot to check yesterday depot file exsist
-    if not file_exist('shell', DEP_FILE_NAME, DEP_FILE_BKT):
+    if not file_exist('qshell', DEP_FILE_NAME, DEP_FILE_BKT):
         return 0
 
     logger.info('Downloading depot file...')
