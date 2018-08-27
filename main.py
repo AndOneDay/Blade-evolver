@@ -83,7 +83,7 @@ def _init_():
     2018/08/09      v1.0                basic functions
 
     Usage:
-        main.py                         [-c|--cleanup] [--manual=str --cls=str]
+        main.py                         [-c|--cleanup] [--manual=str] [--cls=str]
         main.py                         -v|--version
         main.py                         -h|--help
 
