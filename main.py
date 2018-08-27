@@ -83,7 +83,7 @@ def _init_():
     2018/08/09      v1.0                basic functions
 
     Usage:
-        main.py                         [-c|--cleanup] [--manual=str]
+        main.py                         [-c|--cleanup] [--manual=str --cls]
         main.py                         -v|--version
         main.py                         -h|--help
 
@@ -97,6 +97,8 @@ def _init_():
         --manual=str                    manually run process, original log  
                                         need to be pre-downloaded. input 
                                         date syntax: 2018-08-12
+        --cls=str                       [default: pulp]
+                                        qpulp log class to filter, e.g. pulp normal
     """
     # config logger
     logger.setLevel(eval('logging.' + LOG_LEVEL))
@@ -114,6 +116,7 @@ def _init_():
 
 
 def whole_routine():
+    assert args.cls in ['pulp', 'nornal'], 'only pulp or normal class support'
     global YEST_DATE, BEF_YEST_DATE
     # initialization date
     if args['--manual']:
@@ -121,8 +124,11 @@ def whole_routine():
         assert len(temp_date) == 3, logger.error('Manual date syntax error')
         YEST_DATE = datetime.date(int(temp_date[0]),int(temp_date[1]),int(temp_date[2])).strftime('%Y-%m-%d')
         BEF_YEST_DATE = (datetime.date(int(temp_date[0]),int(temp_date[1]),int(temp_date[2])) - datetime.timedelta(1)).strftime('%Y-%m-%d')
+
     ORI_LOG_NAME = 'qpulp_origin_{}.json'.format(''.join(YEST_DATE.split('-')))
-    FLT_LOG_NAME = 'pulp_{}.lst'.format(''.join(YEST_DATE.split('-')))
+    FLT_LOG_NAME = '{}_{}.lst'.format(args.cls, ''.join(YEST_DATE.split('-')))
+    # if args.cls == 'normal':
+    #     FLT_LOG_NAME = 'normal_{}.lst'.format(''.join(YEST_DATE.split('-')))
     DEP_FILE_NAME = 'base_depot_DailyDiary_{}.json'.format(''.join(BEF_YEST_DATE.split('-')))
     UPD_DEP_FILE_NAME = 'base_depot_DailyDiary_{}.json'.format(''.join(YEST_DATE.split('-')))
     logger.info('Processing date: {}'.format(YEST_DATE))
@@ -130,7 +136,7 @@ def whole_routine():
 
     # ---- phase 1 ----
     logger.info('PHASE[1] => fetching original log')
-    if not args['--manual']:
+    if not file_exist('qshell', ORI_LOG_NAME, ORI_LOG_BKT):
         logger.info('Creating log_proxy configuration...')
         conf_path = os.path.join(cur_path, CACHE_PATH, 'log_proxy_{}.conf'.format(YEST_DATE))
         exec_path = os.path.join(cur_path, 'tools', 'log_proxy')
@@ -173,17 +179,7 @@ def whole_routine():
         return 0
     logger.info('Logged with {}'.format(commands.getoutput('{} account|grep AccessKey'.format(exec_path))))
     logger.info('Checking log exsistance...')
-    lstbkt_path = os.path.join(CACHE_PATH, ORI_LOG_BKT+'.listbucket')
-    if list_bkt(exec_path, lstbkt_path, bucket=ORI_LOG_BKT):
-        logger.error('Listing bucket failed.')
-        return 0
-    logger.info('Saved listbucket result file as {}'.format(lstbkt_path))
-    logger.info('Loading bucket file list...')
-    bkt_file_list = load_bkt(lstbkt_path)
-    logger.info('{} files found.'.format(len(bkt_file_list)))
-    if ORI_LOG_NAME not in bkt_file_list:
-        print(ORI_LOG_NAME)
-        logger.error('Original log file not found.')
+    if not file_exist('qshell', ORI_LOG_NAME, ORI_LOG_BKT):
         return 0
     logger.info('Downloading original log file...')
     if not ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME, CACHE_PATH):
@@ -204,6 +200,11 @@ def whole_routine():
         for line in filtered_list:
             f.write('{}\n'.format(line))
     logger.info('Filtered image-list saved as ' + temp_file)
+    logger.info('Checking depot file exsistance...')
+    #add list depot to check yesterday depot file exsist
+    if not file_exist('shell', DEP_FILE_NAME, DEP_FILE_BKT):
+        return 0
+
     logger.info('Downloading depot file...')
     if not ss_download(exec_path, DEP_FILE_DOM, DEP_FILE_NAME, CACHE_PATH):
         logger.error('Downloading failed.')
@@ -225,7 +226,28 @@ def whole_routine():
         logger.error('Uploading result file failed.')
         return 0
     logger.info('PHASE[3] => success.')
-    
+
+def file_exist(tool, bkt_file_name, bkt_name):
+    logger.info('Checking log exsistance...')
+    lstbkt_path = os.path.join(CACHE_PATH, bkt_name + '.listbucket')
+    exec_path = os.path.join(cur_path, 'tools', tool)
+    logger.info('Login qshell...')
+    if log_in(exec_path, (AK, SK)):
+        logger.error('Logging failed.')
+        return False
+    if list_bkt(exec_path, lstbkt_path, bucket=bkt_name):
+        logger.error('Listing bucket failed.')
+        return False
+    logger.info('Saved listbucket result file as {}'.format(lstbkt_path))
+    logger.info('Loading bucket file list...')
+    bkt_file_list = load_bkt(lstbkt_path)
+    logger.info('{} files found.'.format(len(bkt_file_list)))
+    if bkt_file_name not in bkt_file_list:
+        print(bkt_file_name)
+        logger.error('file not found.')
+        return False
+    else:
+        return True
 
 def clean_up():
     logger.info('Clean up job...')

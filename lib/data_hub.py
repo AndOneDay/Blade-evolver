@@ -28,8 +28,9 @@ def humanize_bytes(size_bytes, precision=1):
     return '%.*f %s' % (precision, size_bytes / factor, suffix)
 
 
-def log_filter(log_name):
+def log_filter(log_name, label='pulp'):
     filtered_list = list()
+    normal_filtered_list = list()
     with open(log_name, 'r') as f:
         for line in f.readlines():
             temp = json.loads(line.strip())
@@ -40,8 +41,19 @@ def log_filter(log_name):
             else:
                 scores = [(x['class'],x['score']) for x in temp['label'][0]['data']]
                 # filter condition: pulp
-                if sorted(scores, key=lambda x: x[1])[-1][0] == 'pulp':
+                scores_sorted = sorted(scores, key=lambda x: x[1])
+                if label == 'normal' and scores_sorted[-1][0] == 'normal':
+                    normal_filtered_list.append(os.path.basename(temp['url']), scores_sorted[-1][1])
+                elif scores_sorted[-1][0] == label:
                     filtered_list.append(os.path.basename(temp['url']))
+    if label == 'normal':
+        normal_num = 100000
+        normal_filtered_list = sorted(normal_filtered_list, key=lambda x: x[1])
+        if len(normal_filtered_list) > normal_num:
+            normal_filtered_list = normal_filtered_list[:normal_num]
+        for item in normal_filtered_list:
+            filtered_list.append(item[0])
+
     return filtered_list
                 
     
