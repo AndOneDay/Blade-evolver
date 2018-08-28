@@ -16,13 +16,13 @@ def load_bkt(result_path):
     return result
 
 def upload(exec_path, bucket, target_file, source_file):
-    upload_cmd = '{} rput {} {} {}'.format(exec_path, bucket, target_file, source_file)
+    upload_cmd = '{} rput {} {} {} true'.format(exec_path, bucket, target_file, source_file)
     return os.system(upload_cmd)
 
 def get_url():
     return commands.getoutput("{} privateurl {}".format())
 
-def ss_download(exec_path, domain, log_name, save_path):
+def ss_download(exec_path, domain, log_name, save_path, suffix=''):
     '''
     :params:
     domain:  
