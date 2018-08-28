@@ -232,7 +232,7 @@ def whole_routine():
     deduplicate(dep_name, temp_hash, upd_dep_name, flt_log_name, REMOTE_IMG_PREFIX)
     logger.info('Uploading...')
     exec_path = os.path.join(cur_path, 'tools', 'qshell')
-    if upload(exec_path, DEP_FILE_BKT, UPD_DEP_FILE_NAME, upd_dep_name) or upload(exec_path, FLT_LOG_BKT, FLT_LOG_NAME, flt_log_name):
+    if upload(exec_path, DEP_FILE_BKT, UPD_DEP_FILE_NAME, upd_dep_name, overwrite='true') or upload(exec_path, FLT_LOG_BKT, FLT_LOG_NAME, flt_log_name):
         logger.error('Uploading result file failed.')
         return 0
     logger.info('PHASE[3] => success.')

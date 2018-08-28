@@ -15,8 +15,10 @@ def load_bkt(result_path):
             result.append(buff.strip().split('\t')[0])
     return result
 
-def upload(exec_path, bucket, target_file, source_file):
-    upload_cmd = '{} rput {} {} {} true'.format(exec_path, bucket, target_file, source_file)
+def upload(exec_path, bucket, target_file, source_file, overwrite=''):
+    upload_cmd = '{} rput {} {} {}'.format(exec_path, bucket, target_file, source_file)
+    if overwrite == 'true':
+        upload_cmd += (' ' + overwrite)
     return os.system(upload_cmd)
 
 def get_url():
