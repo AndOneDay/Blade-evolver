@@ -43,7 +43,7 @@ def log_filter(log_name, label='pulp'):
                 # filter condition: pulp
                 scores_sorted = sorted(scores, key=lambda x: x[1])
                 if label == 'normal' and scores_sorted[-1][0] == 'normal':
-                    normal_filtered_list.append(os.path.basename(temp['url']), scores_sorted[-1][1])
+                    normal_filtered_list.append((os.path.basename(temp['url']), scores_sorted[-1][1]))
                 elif scores_sorted[-1][0] == label:
                     filtered_list.append(os.path.basename(temp['url']))
     if label == 'normal':
