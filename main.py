@@ -254,7 +254,7 @@ def file_exist(tool, bkt_file_name, bkt_name):
     logger.info('{} files found.'.format(len(bkt_file_list)))
     if bkt_file_name not in bkt_file_list:
         print(bkt_file_name)
-        logger.error('file not found.')
+        logger.info('the file not found.')
         return False
     else:
         return True
