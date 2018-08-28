@@ -211,10 +211,10 @@ def whole_routine():
 
     logger.info('Downloading depot file...')
     if file_exist('qshell', UPD_DEP_FILE_NAME, DEP_FILE_BKT):
-        if not ss_download(exec_path, DEP_FILE_DOM, DEP_FILE_NAME, CACHE_PATH, '.bak'):
+        if not ss_download(exec_path, DEP_FILE_DOM, UPD_DEP_FILE_NAME, CACHE_PATH, '.bak'):
             logger.error('Downloading failed.')
             return 0
-        DEP_FILE_NAME += '.bak'
+        DEP_FILE_NAME = UPD_DEP_FILE_NAME + '.bak'
     else:
         if not ss_download(exec_path, DEP_FILE_DOM, DEP_FILE_NAME, CACHE_PATH):
             logger.error('Downloading failed.')
