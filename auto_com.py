@@ -6,8 +6,7 @@ start_date_str = '2018-08-19'
 end_date_str = '2018-08-28'
 
 def main():
-    '''
-    '''
+
     while start_date_str != end_date_str:
         print('fetch date', start_date_str)
         flag = os.system('python ../main.py --manual=' + start_date_str + ' --cls=pulp')
