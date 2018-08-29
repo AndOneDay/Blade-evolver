@@ -2,11 +2,12 @@ import os
 import datetime
 import time
 
-start_date_str = '2018-08-19'
-end_date_str = '2018-08-28'
+# start_date_str = '2018-08-19'
+# end_date_str = '2018-08-28'
 
 def main():
-
+    start_date_str = '2018-08-19'
+    end_date_str = '2018-08-28'
     while start_date_str != end_date_str:
         print('fetch date', start_date_str)
         flag = os.system('python ../main.py --manual=' + start_date_str + ' --cls=pulp')
