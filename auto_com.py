@@ -10,11 +10,11 @@ def main():
     end_date_str = '2018-08-28'
     while start_date_str != end_date_str:
         print('fetch date', start_date_str)
-        flag = os.system('python ../main.py --manual=' + start_date_str + ' --cls=pulp')
+        flag = os.system('python main.py --manual=' + start_date_str + ' --cls=pulp')
         if flag:
             print('fetch pulp failed', start_date_str)
             break
-        flag = os.system('python ../main.py --manual=' + start_date_str + ' --cls=normal')
+        flag = os.system('python main.py --manual=' + start_date_str + ' --cls=normal')
         if flag:
             print('fetch normal failed', start_date_str)
             break
