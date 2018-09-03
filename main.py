@@ -150,7 +150,7 @@ def whole_routine():
         submit_ret = submit_job(exec_path, conf_path, jobid_path)
         if not submit_ret:
             logger.error('Submitting log_proxy job failed, try to check exec file exsistance or permission')
-            return 0
+            return 1
         else:
             logger.info('\n'+submit_ret)
         checkpoint = 0
@@ -170,7 +170,7 @@ def whole_routine():
             logger.info('PHASE[1] => success.')
         else:
             logger.error('PHASE[1] => timeout.')
-            return 0
+            return 1
     else:
         logger.info('PHASE[1] skipped because ori_log exist')
 
@@ -180,15 +180,15 @@ def whole_routine():
     logger.info('Login qshell...')
     if log_in(exec_path, (AK,SK)):
         logger.error('Logging failed.')
-        return 0
+        return 1
     logger.info('Logged with {}'.format(commands.getoutput('{} account|grep AccessKey'.format(exec_path))))
     #logger.info('Checking log exsistance...')
     if not file_exist('qshell', ORI_LOG_NAME, ORI_LOG_BKT):
-        return 0
+        return 1
     logger.info('Downloading original log file...')
     if not ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME, CACHE_PATH):
         logger.error('Downloading failed.')
-        return 0
+        return 1
     logger.info('PHASE[2] => success.')
 
     # ---- phase 3 ----
@@ -196,7 +196,7 @@ def whole_routine():
     filtered_list = log_filter(os.path.join(CACHE_PATH, ORI_LOG_NAME), args['--cls'])
     if not filtered_list:
         logger.error('Filter image list failed.')
-        return 0
+        return 1
     logger.info('Filtered {} images.'.format(len(filtered_list)))
     temp_file = os.path.join(CACHE_PATH, '_temp_pulp_img.lst')
     temp_hash = os.path.join(CACHE_PATH, '_temp_pulp_hash.json')
@@ -207,24 +207,24 @@ def whole_routine():
     logger.info('Checking depot file exsistance...')
     #add list depot to check yesterday depot file exsist
     if not file_exist('qshell', DEP_FILE_NAME, DEP_FILE_BKT):
-        return 0
+        return 1
 
     logger.info('Downloading depot file...')
     if file_exist('qshell', UPD_DEP_FILE_NAME, DEP_FILE_BKT):
         if not ss_download(exec_path, DEP_FILE_DOM, UPD_DEP_FILE_NAME, CACHE_PATH, '.bak'):
             logger.error('Downloading failed.')
-            return 0
+            return 1
         DEP_FILE_NAME = UPD_DEP_FILE_NAME + '.bak'
     else:
         if not ss_download(exec_path, DEP_FILE_DOM, DEP_FILE_NAME, CACHE_PATH):
             logger.error('Downloading failed.')
-            return 0
+            return 1
     logger.info('Fetching hash...')
     exec_path = os.path.join(cur_path, 'tools', 'qhash_proxy')
     fetch_hash = qhash(exec_path, temp_file, REMOTE_IMG_PREFIX, temp_hash)
     if fetch_hash:
         logger.info('Fetching hash failed.')
-        return 0
+        return 1
     logger.info('Deduplicating...')
     dep_name = os.path.join(CACHE_PATH, DEP_FILE_NAME)
     upd_dep_name = os.path.join(CACHE_PATH, UPD_DEP_FILE_NAME)
@@ -234,7 +234,7 @@ def whole_routine():
     exec_path = os.path.join(cur_path, 'tools', 'qshell')
     if upload(exec_path, DEP_FILE_BKT, UPD_DEP_FILE_NAME, upd_dep_name, overwrite='true') or upload(exec_path, FLT_LOG_BKT, FLT_LOG_NAME, flt_log_name):
         logger.error('Uploading result file failed.')
-        return 0
+        return 1
     logger.info('PHASE[3] => success.')
 
 def file_exist(tool, bkt_file_name, bkt_name):
