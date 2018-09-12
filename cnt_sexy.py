@@ -1,6 +1,6 @@
 import json
 import os
-
+import cPickle as pickle
 log_name = './runtime_cache/qpulp_origin_20180905.json'
 label = 'sexy'
 filtered_list = []
@@ -18,4 +18,4 @@ with open(log_name, 'r') as f:
             if scores_sorted[-1][0] == label:
                 filtered_list.append(os.path.basename(temp['url']))
 
-print(len(filtered_list))
+pickle.dump(filtered_list, open('./sexy0905.pkl', 'wb'))
