@@ -31,6 +31,7 @@ def humanize_bytes(size_bytes, precision=1):
 def log_filter(log_name, label='pulp'):
     filtered_list = list()
     normal_filtered_list = list()
+    sexy_filtered_list = list()
     with open(log_name, 'r') as f:
         for line in f.readlines():
             temp = json.loads(line.strip())
@@ -44,6 +45,8 @@ def log_filter(log_name, label='pulp'):
                 scores_sorted = sorted(scores, key=lambda x: x[1])
                 if label == 'normal' and scores_sorted[-1][0] == 'normal':
                     normal_filtered_list.append((os.path.basename(temp['url']), scores_sorted[-1][1]))
+                elif label == 'sexy' and scores_sorted[-1][0] == 'sexy':
+                    sexy_filtered_list.append((os.path.basename(temp['url']), scores_sorted[-1][1]))
                 elif scores_sorted[-1][0] == label:
                     filtered_list.append(os.path.basename(temp['url']))
     if label == 'normal':
@@ -52,6 +55,14 @@ def log_filter(log_name, label='pulp'):
         if len(normal_filtered_list) > normal_num:
             normal_filtered_list = normal_filtered_list[:normal_num]
         for item in normal_filtered_list:
+            filtered_list.append(item[0])
+    elif label == 'sexy':
+        sexy_num = 50000
+        sexy_filtered_list = sorted(sexy_filtered_list, key=lambda x: x[1])
+        print('sexy len:', len(sexy_filtered_list))
+        if len(sexy_filtered_list) > sexy_num:
+            sexy_filtered_list = sexy_filtered_list[:sexy_num]
+        for item in sexy_filtered_list:
             filtered_list.append(item[0])
 
     return filtered_list

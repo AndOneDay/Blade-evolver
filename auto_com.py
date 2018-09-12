@@ -6,10 +6,14 @@ import time
 # end_date_str = '2018-08-28'
 
 def main():
-    start_date_str = '2018-08-19'
-    end_date_str = '2018-08-28'
+    start_date_str = '2018-09-06'
+    end_date_str = '2018-09-07'
     while start_date_str != end_date_str:
         print('fetch date', start_date_str)
+        flag = os.system('python main.py --manual=' + start_date_str + ' --cls=sexy')
+        if flag:
+            print('fetch sexy failed', start_date_str)
+            break
         flag = os.system('python main.py --manual=' + start_date_str + ' --cls=pulp')
         if flag:
             print('fetch pulp failed', start_date_str)
