@@ -17,6 +17,6 @@ with open(log_name, 'r') as f:
             scores_sorted = sorted(scores, key=lambda x: x[1])
             if scores_sorted[-1][0] == label:
                 filtered_list.append((os.path.basename(temp['url']), scores_sorted[-1][1]))
-                
+
 filtered_list = sorted(filtered_list, key=lambda x: x[1])
 pickle.dump(filtered_list, open('./sexy0905.pkl', 'wb'))

@@ -230,6 +230,7 @@ def whole_routine():
     upd_dep_name = os.path.join(CACHE_PATH, UPD_DEP_FILE_NAME)
     flt_log_name = os.path.join(CACHE_PATH, FLT_LOG_NAME)
     deduplicate(dep_name, temp_hash, upd_dep_name, flt_log_name, REMOTE_IMG_PREFIX)
+    return 1
     logger.info('Uploading...')
     exec_path = os.path.join(cur_path, 'tools', 'qshell')
     if upload(exec_path, DEP_FILE_BKT, UPD_DEP_FILE_NAME, upd_dep_name, overwrite='true') or upload(exec_path, FLT_LOG_BKT, FLT_LOG_NAME, flt_log_name):
