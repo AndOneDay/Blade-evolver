@@ -57,7 +57,7 @@ def log_filter(log_name, label='pulp'):
         for item in normal_filtered_list:
             filtered_list.append(item[0])
     elif label == 'sexy':
-        sexy_num = 100000
+        sexy_num = 200000
         sexy_filtered_list = sorted(sexy_filtered_list, key=lambda x: x[1])
         #print('sexy len:', len(sexy_filtered_list))
         if len(sexy_filtered_list) > sexy_num:
