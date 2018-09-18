@@ -59,11 +59,11 @@ def log_filter(log_name, label='pulp'):
     elif label == 'sexy':
         sexy_num = 100000
         sexy_filtered_list = sorted(sexy_filtered_list, key=lambda x: x[1])
-        print('sexy len:', len(sexy_filtered_list))
-        #if len(sexy_filtered_list) > sexy_num:
-        #    sexy_filtered_list = sexy_filtered_list[:sexy_num]
-        import random
-        sexy_filtered_list = random.sample(sexy_filtered_list, sexy_num)
+        #print('sexy len:', len(sexy_filtered_list))
+        if len(sexy_filtered_list) > sexy_num:
+            sexy_filtered_list = sexy_filtered_list[:sexy_num]
+        #import random
+        #sexy_filtered_list = random.sample(sexy_filtered_list, sexy_num)
         for item in sexy_filtered_list:
             filtered_list.append(item[0])
 
