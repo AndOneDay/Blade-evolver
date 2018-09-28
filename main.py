@@ -83,7 +83,7 @@ def _init_():
     2018/08/09      v1.0                basic functions
 
     Usage:
-        main.py                         [-c|--cleanup] [--manual=str] [--cls=str]
+        main.py                         [-c|--cleanup] [--manual=str] [--cls=str][--only_pull_log][--pull]
         main.py                         -v|--version
         main.py                         -h|--help
 
@@ -93,13 +93,13 @@ def _init_():
         -h --help                       show this screen
         -v --version                    show script version
         -c --cleanup                    just clean up cache dir
+        --only_pull_log                 pull log
+        --pull                          pull method
         ------------------------------------------------------------------
         --manual=str                    manually run process, original log  
                                         need to be pre-downloaded. input 
                                         date syntax: 2018-08-12
         --cls=str                       [default: pulp]
-        --only_pull_log=bool            [default: False]
-        --pull=str                      [default: once]
     """
     # config logger
     logger.setLevel(eval('logging.' + LOG_LEVEL))
