@@ -98,6 +98,8 @@ def _init_():
                                         need to be pre-downloaded. input 
                                         date syntax: 2018-08-12
         --cls=str                       [default: pulp]
+        --only_pull_log=bool            [default: False]
+        --pull=str                      [default: 'once']
     """
     # config logger
     logger.setLevel(eval('logging.' + LOG_LEVEL))
@@ -145,35 +147,35 @@ def whole_routine():
         conf_path = os.path.join(cur_path, CACHE_PATH, 'log_proxy_{}.conf'.format(YEST_DATE))
         exec_path = os.path.join(cur_path, 'tools', 'log_proxy')
         jobid_path = os.path.join(cur_path, CACHE_PATH, 'job_id.log')
-        create_conf(YEST_DATE, (AK,SK), ORI_LOG_NAME, conf_path=conf_path)
-        logger.info('Submitting log_proxy job...')
-        submit_ret = submit_job(exec_path, conf_path, jobid_path)
-        if not submit_ret:
-            logger.error('Submitting log_proxy job failed, try to check exec file exsistance or permission')
-            return 1
+
+        if args['--pull'] == 'once':
+            pull_log(ORI_LOG_NAME, conf_path, exec_path, jobid_path)
         else:
-            logger.info('\n'+submit_ret)
-        checkpoint = 0
-        checkflag = False
-        while(checkpoint<(float(MAX_CHECK_TIME)/CHECK_INTERVAL)):
-            checkpoint += 1
-            job_id, check_ret = check_job(exec_path, conf_path, jobid_path)
-            if checkpoint == 1:
-                logger.info('Checking log_proxy job status...')
-                logger.info('Job id -> {}'.format(job_id))
-            logger.info('Checkpoint[{}] -> {}'.format(checkpoint, check_ret))
-            if check_ret == 'done':
-                checkflag = True
-                break
-            time.sleep(CHECK_INTERVAL)
-        if checkflag:
-            logger.info('PHASE[1] => success.')
-        else:
-            logger.error('PHASE[1] => timeout.')
-            return 1
+            pull_log(ORI_LOG_NAME + '.am', conf_path, exec_path, jobid_path, start_time='00:00:00', end_time='11:59:59')
+            pull_log(ORI_LOG_NAME + '.pm', conf_path, exec_path, jobid_path, start_time='12:00:00', end_time='23:59:59')
+            logger.info('Downloading original log file...')
+            if not ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.am', CACHE_PATH):
+                logger.error('Downloading failed.')
+                return 1
+            if not ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.pm', CACHE_PATH):
+                logger.error('Downloading failed.')
+                return 1
+            cmd = 'cat runtime_cache/{} runtime_cache/{} > runtime_cache/{}'.format(ORI_LOG_NAME + '.am', ORI_LOG_NAME + '.pm', ORI_LOG_NAME)
+            os.system(cmd)
+            ori_log_name = os.path.join(CACHE_PATH, ORI_LOG_NAME)
+            if upload(exec_path, ORI_LOG_BKT, ORI_LOG_NAME, ori_log_name):
+                logger.error('Uploading ori_log file failed.')
+                return 1
+
     else:
         logger.info('PHASE[1] skipped because ori_log exist')
-
+    if args['--only_pull_log']:
+        logger.info('only pull log')
+        return 0
+    else:
+        logger.info('continue to PHASE 2')
+    print('manual stop')
+    return 0
     # ---- phase 2 ----
     logger.info('PHASE[2] => downloading original log file')
     exec_path = os.path.join(cur_path, 'tools', 'qshell')
@@ -238,6 +240,35 @@ def whole_routine():
         logger.error('Uploading result file failed.')
         return 1
     logger.info('PHASE[3] => success.')
+
+
+def pull_log(ORI_LOG_NAME, conf_path, exec_path, jobid_path, start_time='', end_time=''):
+    create_conf(YEST_DATE, (AK, SK), ORI_LOG_NAME, conf_path=conf_path)
+    logger.info('Submitting log_proxy job...')
+    submit_ret = submit_job(exec_path, conf_path, jobid_path)
+    if not submit_ret:
+        logger.error('Submitting log_proxy job failed, try to check exec file exsistance or permission')
+        return 1
+    else:
+        logger.info('\n' + submit_ret)
+    checkpoint = 0
+    checkflag = False
+    while (checkpoint < (float(MAX_CHECK_TIME) / CHECK_INTERVAL)):
+        checkpoint += 1
+        job_id, check_ret = check_job(exec_path, conf_path, jobid_path)
+        if checkpoint == 1:
+            logger.info('Checking log_proxy job status...')
+            logger.info('Job id -> {}'.format(job_id))
+        logger.info('Checkpoint[{}] -> {}'.format(checkpoint, check_ret))
+        if check_ret == 'done':
+            checkflag = True
+            break
+        time.sleep(CHECK_INTERVAL)
+    if checkflag:
+        logger.info('PHASE[1] => success.')
+    else:
+        logger.error('PHASE[1] => timeout.')
+        return 1
 
 def file_exist(tool, bkt_file_name, bkt_name):
     logger.info('Checking log exsistance...')

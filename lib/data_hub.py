@@ -35,6 +35,9 @@ def log_filter(log_name, label='pulp'):
     with open(log_name, 'r') as f:
         for line in f.readlines():
             temp = json.loads(line.strip())
+            #filter by uid
+            if temp['uid'] == 1380304165:
+                continue
             if temp['label'][0]['data'] == None:
                 continue
             elif len(temp['label'][0]['data']) < NUM_CLASS:

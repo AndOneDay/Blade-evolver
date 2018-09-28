@@ -4,7 +4,7 @@ import commands
 import base64
 
 
-def create_conf(date, aksk, log_fname, conf_path='./log_proxy.conf'):
+def create_conf(date, aksk, log_fname, conf_path='./log_proxy.conf', start_time='00:00:00', end_time='23:59:59'):
     '''
     TODO(Northrend@github.com): use recompiler to just modify on template.conf file
     :params: 
@@ -18,9 +18,9 @@ def create_conf(date, aksk, log_fname, conf_path='./log_proxy.conf'):
         f.write('sk = {}\n\n'.format(aksk[1]))
         f.write('[params]\n')
         f.write('cmd = pulp\n')
-        f.write('start_time = {}T00:00:00\n'.format(date))
+        f.write('start_time = {}T{}\n'.format(date, start_time))
         # f.write('end_time = {}T00:09:59\n'.format(date))    # debugging
-        f.write('end_time = {}T23:59:59\n'.format(date))
+        f.write('end_time = {}T{}\n'.format(date, end_time))
         f.write('uid = \n')
         f.write('key = {}\n'.format(log_fname))
         f.write('bucket = qpulp-log\n')
