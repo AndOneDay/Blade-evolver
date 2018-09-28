@@ -154,6 +154,11 @@ def whole_routine():
             #pull_log(ORI_LOG_NAME + '.am', conf_path, exec_path, jobid_path, start_time='00:00:00', end_time='11:59:59')
             #pull_log(ORI_LOG_NAME + '.pm', conf_path, exec_path, jobid_path, start_time='12:00:00', end_time='23:59:59')
             logger.info('Downloading original log file...')
+            exec_path = os.path.join(cur_path, 'tools', 'qshell')
+            logger.info('Login qshell...')
+            if log_in(exec_path, (AK, SK)):
+                logger.error('Logging failed.')
+                return 1
             if not ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.am', CACHE_PATH):
                 logger.error('Downloading failed.')
                 return 1

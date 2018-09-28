@@ -32,9 +32,9 @@ def ss_download(exec_path, domain, log_name, save_path, suffix=''):
     src_st = 'http://nbxs-gate-io.qiniu.com'
     public_url = os.path.join(domain, log_name)
     private_url = commands.getoutput("{} privateurl {}".format(exec_path, public_url)).split('\n')[-1]  # only qshell version v2.1.8 supported
-    print(private_url)
+    #print(private_url)
     download_cmd = 'curl "{}" -H "Host: {}" -o {}'.format(private_url.replace(domain, src_st), os.path.basename(domain), os.path.join(save_path, log_name + suffix))
-    print(download_cmd)
+    #print(download_cmd)
     os.system(download_cmd)
     if os.path.exists(os.path.join(save_path, log_name)):
         return 1
