@@ -151,8 +151,8 @@ def whole_routine():
         if not args['--pull']:
             pull_log(ORI_LOG_NAME, conf_path, exec_path, jobid_path)
         else:
-            pull_log(ORI_LOG_NAME + '.am', conf_path, exec_path, jobid_path, start_time='00:00:00', end_time='11:59:59')
-            pull_log(ORI_LOG_NAME + '.pm', conf_path, exec_path, jobid_path, start_time='12:00:00', end_time='23:59:59')
+            #pull_log(ORI_LOG_NAME + '.am', conf_path, exec_path, jobid_path, start_time='00:00:00', end_time='11:59:59')
+            #pull_log(ORI_LOG_NAME + '.pm', conf_path, exec_path, jobid_path, start_time='12:00:00', end_time='23:59:59')
             logger.info('Downloading original log file...')
             if not ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.am', CACHE_PATH):
                 logger.error('Downloading failed.')
