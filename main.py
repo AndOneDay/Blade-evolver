@@ -148,7 +148,7 @@ def whole_routine():
         exec_path = os.path.join(cur_path, 'tools', 'log_proxy')
         jobid_path = os.path.join(cur_path, CACHE_PATH, 'job_id.log')
 
-        if args['--pull'] == 'once':
+        if not args['--pull']:
             pull_log(ORI_LOG_NAME, conf_path, exec_path, jobid_path)
         else:
             pull_log(ORI_LOG_NAME + '.am', conf_path, exec_path, jobid_path, start_time='00:00:00', end_time='11:59:59')
