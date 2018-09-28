@@ -242,8 +242,11 @@ def whole_routine():
     logger.info('PHASE[3] => success.')
 
 
-def pull_log(ORI_LOG_NAME, conf_path, exec_path, jobid_path, start_time='', end_time=''):
-    create_conf(YEST_DATE, (AK, SK), ORI_LOG_NAME, conf_path=conf_path)
+def pull_log(ORI_LOG_NAME, conf_path, exec_path, jobid_path, start_time=None, end_time=None):
+    if start_time is not None and end_time is not None:
+        create_conf(YEST_DATE, (AK, SK), ORI_LOG_NAME, conf_path=conf_path, start_time=start_time, end_time=end_time)
+    else:
+        create_conf(YEST_DATE, (AK, SK), ORI_LOG_NAME, conf_path=conf_path)
     logger.info('Submitting log_proxy job...')
     submit_ret = submit_job(exec_path, conf_path, jobid_path)
     if not submit_ret:
