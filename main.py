@@ -99,7 +99,7 @@ def _init_():
                                         date syntax: 2018-08-12
         --cls=str                       [default: pulp]
         --only_pull_log=bool            [default: False]
-        --pull=str                      [default: 'once']
+        --pull=str                      [default: once]
     """
     # config logger
     logger.setLevel(eval('logging.' + LOG_LEVEL))
