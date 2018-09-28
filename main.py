@@ -151,21 +151,29 @@ def whole_routine():
         if not args['--pull']:
             pull_log(ORI_LOG_NAME, conf_path, exec_path, jobid_path)
         else:
+            pull_times = 4
+            time_pair = [('00:00:00','05:59:59'), ('06:00:00', '11:59:59'), ('12:00:00', '17:59:59'), ('18:00:00', '23:59:59')]
+            for i in range(pull_times):
+                exec_path = os.path.join(cur_path, 'tools', 'log_proxy')
+                pull_log(ORI_LOG_NAME + '.' + str(i), conf_path, exec_path, jobid_path, start_time=time_pair[i][0],
+                         end_time=time_pair[i][1])
+                exec_path = os.path.join(cur_path, 'tools', 'qshell')
+                ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.' + str(i), CACHE_PATH)
             #pull_log(ORI_LOG_NAME + '.am', conf_path, exec_path, jobid_path, start_time='00:00:00', end_time='11:59:59')
             #pull_log(ORI_LOG_NAME + '.pm', conf_path, exec_path, jobid_path, start_time='12:00:00', end_time='23:59:59')
-            logger.info('Downloading original log file...')
-            exec_path = os.path.join(cur_path, 'tools', 'qshell')
-            logger.info('Login qshell...')
-            if log_in(exec_path, (AK, SK)):
-                logger.error('Logging failed.')
-                return 1
-            if not ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.am', CACHE_PATH):
-                logger.error('Downloading failed.')
-                return 1
-            if not ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.pm', CACHE_PATH):
-                logger.error('Downloading failed.')
-                return 1
-            cmd = 'cat runtime_cache/{} runtime_cache/{} > runtime_cache/{}'.format(ORI_LOG_NAME + '.am', ORI_LOG_NAME + '.pm', ORI_LOG_NAME)
+            # logger.info('Downloading original log file...')
+            # exec_path = os.path.join(cur_path, 'tools', 'qshell')
+            # logger.info('Login qshell...')
+            # if log_in(exec_path, (AK, SK)):
+            #     logger.error('Logging failed.')
+            #     return 1
+            # if not ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.am', CACHE_PATH):
+            #     logger.error('Downloading failed.')
+            #     return 1
+            # if not ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.pm', CACHE_PATH):
+            #     logger.error('Downloading failed.')
+            #     return 1
+            cmd = 'cat runtime_cache/{} runtime_cache/{} runtime_cache/{} runtime_cache/{} > runtime_cache/{}'.format(ORI_LOG_NAME + '.0', ORI_LOG_NAME + '.1', ORI_LOG_NAME + '.2', ORI_LOG_NAME + '.3', ORI_LOG_NAME)
             os.system(cmd)
             ori_log_name = os.path.join(CACHE_PATH, ORI_LOG_NAME)
             if upload(exec_path, ORI_LOG_BKT, ORI_LOG_NAME, ori_log_name):
