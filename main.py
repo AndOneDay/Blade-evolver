@@ -185,10 +185,8 @@ def whole_routine():
     if args['--only_pull_log']:
         logger.info('only pull log')
         return 0
-    else:
-        logger.info('continue to PHASE 2')
-    print('manual stop')
-    return 1
+    # else:
+    #     logger.info('continue to PHASE 2')
     # ---- phase 2 ----
     logger.info('PHASE[2] => downloading original log file')
     exec_path = os.path.join(cur_path, 'tools', 'qshell')
