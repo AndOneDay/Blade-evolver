@@ -153,14 +153,14 @@ def whole_routine():
         else:
             pull_times = 5
             #time_pair = [('00:00:00','05:59:59'), ('06:00:00', '11:59:59'), ('12:00:00', '17:59:59'), ('18:00:00', '23:59:59')]
-            time_pair = [('00:00:00','05:59:59'), ('06:00:00', '11:59:59'), ('12:00:00', '17:59:59'), ('18:00:00', '20:59:59'), ('21:00:00', '23:59:59')]
+            time_pair = [('00:00:00','02:59:59'), ('03:00:00','05:59:59'), ('06:00:00', '11:59:59'), ('12:00:00', '17:59:59'), ('18:00:00', '23:59:59')]
             cmd = 'cat'
             for i in range(pull_times):
-                # exec_path = os.path.join(cur_path, 'tools', 'log_proxy')
-                # pull_log(ORI_LOG_NAME + '.' + str(i), conf_path, exec_path, jobid_path, start_time=time_pair[i][0],
-                #          end_time=time_pair[i][1])
+                exec_path = os.path.join(cur_path, 'tools', 'log_proxy')
+                pull_log(ORI_LOG_NAME + '.' + str(i), conf_path, exec_path, jobid_path, start_time=time_pair[i][0],
+                         end_time=time_pair[i][1])
                 exec_path = os.path.join(cur_path, 'tools', 'qshell')
-                # ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.' + str(i), CACHE_PATH)
+                ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.' + str(i), CACHE_PATH)
                 cmd += ' runtime_cache/{}'.format(ORI_LOG_NAME + '.' + str(i))
 
             #pull_log(ORI_LOG_NAME + '.am', conf_path, exec_path, jobid_path, start_time='00:00:00', end_time='11:59:59')
