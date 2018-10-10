@@ -159,7 +159,7 @@ def whole_routine():
                 # exec_path = os.path.join(cur_path, 'tools', 'log_proxy')
                 # pull_log(ORI_LOG_NAME + '.' + str(i), conf_path, exec_path, jobid_path, start_time=time_pair[i][0],
                 #          end_time=time_pair[i][1])
-                # exec_path = os.path.join(cur_path, 'tools', 'qshell')
+                exec_path = os.path.join(cur_path, 'tools', 'qshell')
                 # ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.' + str(i), CACHE_PATH)
                 cmd += ' runtime_cache/{}'.format(ORI_LOG_NAME + '.' + str(i))
 
