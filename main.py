@@ -151,14 +151,17 @@ def whole_routine():
         if not args['--pull']:
             pull_log(ORI_LOG_NAME, conf_path, exec_path, jobid_path)
         else:
-            pull_times = 4
-            time_pair = [('00:00:00','05:59:59'), ('06:00:00', '11:59:59'), ('12:00:00', '17:59:59'), ('18:00:00', '23:59:59')]
-            #time_pair = [('00:00:00','02:59:59'), ('03:00:00','05:59:59'), ('06:00:00', '11:59:59'), ('12:00:00', '17:59:59'), ('18:00:00', '23:59:59')]
+            pull_times = 8
             cmd = 'cat'
             for i in range(pull_times):
+                time_len = 24 / pull_times
+                st = i * time_len
+                et = (i + 1) * time_len
+                start_time = '{:02d}:00:00'.format(st)
+                end_time = '{:02d}:59:59'.format(et - 1)
                 exec_path = os.path.join(cur_path, 'tools', 'log_proxy')
-                pull_log(ORI_LOG_NAME + '.' + str(i), conf_path, exec_path, jobid_path, start_time=time_pair[i][0],
-                         end_time=time_pair[i][1])
+                pull_log(ORI_LOG_NAME + '.' + str(i), conf_path, exec_path, jobid_path, start_time=start_time,
+                         end_time=end_time)
                 exec_path = os.path.join(cur_path, 'tools', 'qshell')
                 ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.' + str(i), CACHE_PATH)
                 cmd += ' runtime_cache/{}'.format(ORI_LOG_NAME + '.' + str(i))
