@@ -50,7 +50,7 @@ BEF_YEST_DATE = (datetime.datetime.now() - datetime.timedelta(2)).strftime('%Y-%
 # BEF_YEST_DATE = '2018-07-02'
 
 # mutable params
-CHECK_INTERVAL = 600      # second 
+CHECK_INTERVAL = 300      # second
 MAX_CHECK_TIME = 7200   # second
 REMOTE_IMG_PREFIX = 'http://oquqvdmso.bkt.clouddn.com/atflow-log-proxy/images/'
 ORI_LOG_BKT = 'qpulp-log'
@@ -148,6 +148,7 @@ def whole_routine():
         exec_path = os.path.join(cur_path, 'tools', 'log_proxy')
         jobid_path = os.path.join(cur_path, CACHE_PATH, 'job_id.log')
 
+        pull_success_flag = True
         if not args['--pull']:
             pull_log(ORI_LOG_NAME, conf_path, exec_path, jobid_path)
         else:
@@ -164,29 +165,28 @@ def whole_routine():
                          end_time=end_time)
                 exec_path = os.path.join(cur_path, 'tools', 'qshell')
                 ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.' + str(i), CACHE_PATH)
+                if (not os.path.exists(CACHE_PATH)) or (os.path.getsize(CACHE_PATH) < 20 * 1024 * 1024):
+                    pull_success_flag = False
+                    break
                 cmd += ' runtime_cache/{}'.format(ORI_LOG_NAME + '.' + str(i))
 
-            #pull_log(ORI_LOG_NAME + '.am', conf_path, exec_path, jobid_path, start_time='00:00:00', end_time='11:59:59')
-            #pull_log(ORI_LOG_NAME + '.pm', conf_path, exec_path, jobid_path, start_time='12:00:00', end_time='23:59:59')
-            # logger.info('Downloading original log file...')
-            # exec_path = os.path.join(cur_path, 'tools', 'qshell')
-            # logger.info('Login qshell...')
-            # if log_in(exec_path, (AK, SK)):
-            #     logger.error('Logging failed.')
-            #     return 1
-            # if not ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.am', CACHE_PATH):
-            #     logger.error('Downloading failed.')
-            #     return 1
-            # if not ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.pm', CACHE_PATH):
-            #     logger.error('Downloading failed.')
-            #     return 1
-            #cmd = 'cat runtime_cache/{} runtime_cache/{} runtime_cache/{} runtime_cache/{} > runtime_cache/{}'.format(ORI_LOG_NAME + '.0', ORI_LOG_NAME + '.1', ORI_LOG_NAME + '.2', ORI_LOG_NAME + '.3', ORI_LOG_NAME)
             cmd += ' > runtime_cache/{}'.format(ORI_LOG_NAME)
-            os.system(cmd)
-            ori_log_name = os.path.join(CACHE_PATH, ORI_LOG_NAME)
-            if upload(exec_path, ORI_LOG_BKT, ORI_LOG_NAME, ori_log_name):
-                logger.error('Uploading ori_log file failed.')
-                return 1
+            if pull_success_flag:
+                os.system(cmd)
+                ori_log_name = os.path.join(CACHE_PATH, ORI_LOG_NAME)
+                if upload(exec_path, ORI_LOG_BKT, ORI_LOG_NAME, ori_log_name):
+                    logger.error('Uploading ori_log file failed.')
+                    return 1
+                else:
+                    delete_file_path = os.path.join(CACHE_PATH, 'delete_lst.txt')
+                    with open(delete_file_path, 'w') as f:
+                        for i in range(pull_times):
+                            f.write('{}'.format(ORI_LOG_NAME + '.' + str(i)) + '\n')
+                    exec_path = os.path.join(cur_path, 'tools', 'qshell')
+                    delete_cmd = '{} batchdelete {} {}'.format(exec_path, ORI_LOG_BKT, delete_file_path)
+                    os.system(delete_cmd)
+            else:
+                print('pull log failed')
 
     else:
         logger.info('PHASE[1] skipped because ori_log exist')
