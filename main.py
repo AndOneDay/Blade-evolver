@@ -50,7 +50,7 @@ BEF_YEST_DATE = (datetime.datetime.now() - datetime.timedelta(2)).strftime('%Y-%
 # BEF_YEST_DATE = '2018-07-02'
 
 # mutable params
-CHECK_INTERVAL = 300      # second
+CHECK_INTERVAL = 120      # second
 MAX_CHECK_TIME = 7200   # second
 REMOTE_IMG_PREFIX = 'http://oquqvdmso.bkt.clouddn.com/atflow-log-proxy/images/'
 ORI_LOG_BKT = 'qpulp-log'
