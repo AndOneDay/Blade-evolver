@@ -165,7 +165,8 @@ def whole_routine():
                          end_time=end_time)
                 exec_path = os.path.join(cur_path, 'tools', 'qshell')
                 ss_download(exec_path, ORI_LOG_DOM, ORI_LOG_NAME + '.' + str(i), CACHE_PATH)
-                if (not os.path.exists(CACHE_PATH)) or (os.path.getsize(CACHE_PATH) < 20 * 1024 * 1024):
+                tmd_cache_file = os.path.join(CACHE_PATH, ORI_LOG_NAME + '.' + str(i))
+                if (not os.path.exists(tmd_cache_file)) or (os.path.getsize(tmd_cache_file) < 20 * 1024 * 1024):
                     pull_success_flag = False
                     break
                 cmd += ' runtime_cache/{}'.format(ORI_LOG_NAME + '.' + str(i))
