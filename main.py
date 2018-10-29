@@ -179,13 +179,18 @@ def whole_routine():
                     logger.error('Uploading ori_log file failed.')
                     return 1
                 else:
-                    delete_file_path = os.path.join(CACHE_PATH, 'delete_lst.txt')
-                    with open(delete_file_path, 'w') as f:
-                        for i in range(pull_times):
-                            f.write('{}'.format(ORI_LOG_NAME + '.' + str(i)) + '\n')
                     exec_path = os.path.join(cur_path, 'tools', 'qshell')
-                    delete_cmd = '{} batchdelete {} {}'.format(exec_path, ORI_LOG_BKT, delete_file_path)
-                    os.system(delete_cmd)
+                    for i in range(pull_times):
+                        delete_log = '{}'.format(ORI_LOG_NAME + '.' + str(i))
+                        delete_cmd = '{} delete {} {}'.format(exec_path, ORI_LOG_BKT, delete_log)
+                        os.system(delete_cmd)
+                    # delete_file_path = os.path.join(CACHE_PATH, 'delete_lst.txt')
+                    # with open(delete_file_path, 'w') as f:
+                    #     for i in range(pull_times):
+                    #         f.write('{}'.format(ORI_LOG_NAME + '.' + str(i)) + '\n')
+                    # exec_path = os.path.join(cur_path, 'tools', 'qshell')
+                    # delete_cmd = '{} batchdelete {} {}'.format(exec_path, ORI_LOG_BKT, delete_file_path)
+                    # os.system(delete_cmd)
             else:
                 print('pull log failed')
 
