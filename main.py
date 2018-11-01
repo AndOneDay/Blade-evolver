@@ -128,6 +128,7 @@ def whole_routine():
 
     ORI_LOG_NAME = 'qpulp_origin_{}.json'.format(''.join(YEST_DATE.split('-')))
     FLT_LOG_NAME = '{}_{}.lst'.format(args['--cls'], ''.join(YEST_DATE.split('-')))
+    UID_LOG_NAME = 'qpulp_uid_{}.csv'.format(''.join(YEST_DATE.split('-')))
     # if args.cls == 'normal':
     #     FLT_LOG_NAME = 'normal_{}.lst'.format(''.join(YEST_DATE.split('-')))
     DEP_FILE_NAME = 'base_depot_DailyDiary_{}.json'.format(''.join(BEF_YEST_DATE.split('-')))
@@ -184,13 +185,6 @@ def whole_routine():
                         delete_log = '{}'.format(ORI_LOG_NAME + '.' + str(i))
                         delete_cmd = '{} delete {} {}'.format(exec_path, ORI_LOG_BKT, delete_log)
                         os.system(delete_cmd)
-                    # delete_file_path = os.path.join(CACHE_PATH, 'delete_lst.txt')
-                    # with open(delete_file_path, 'w') as f:
-                    #     for i in range(pull_times):
-                    #         f.write('{}'.format(ORI_LOG_NAME + '.' + str(i)) + '\n')
-                    # exec_path = os.path.join(cur_path, 'tools', 'qshell')
-                    # delete_cmd = '{} batchdelete {} {}'.format(exec_path, ORI_LOG_BKT, delete_file_path)
-                    # os.system(delete_cmd)
             else:
                 print('pull log failed')
 
@@ -220,7 +214,7 @@ def whole_routine():
 
     # ---- phase 3 ----
     logger.info('PHASE[3] => filtering interestesd logs and do deduplication')
-    filtered_list = log_filter(os.path.join(CACHE_PATH, ORI_LOG_NAME), args['--cls'])
+    filtered_list, url_uid_map = log_filter(os.path.join(CACHE_PATH, ORI_LOG_NAME), args['--cls'])
     if not filtered_list:
         logger.error('Filter image list failed.')
         return 1
@@ -256,7 +250,8 @@ def whole_routine():
     dep_name = os.path.join(CACHE_PATH, DEP_FILE_NAME)
     upd_dep_name = os.path.join(CACHE_PATH, UPD_DEP_FILE_NAME)
     flt_log_name = os.path.join(CACHE_PATH, FLT_LOG_NAME)
-    deduplicate(dep_name, temp_hash, upd_dep_name, flt_log_name, REMOTE_IMG_PREFIX)
+    url_uid_name = os.path.join(CACHE_PATH, UID_LOG_NAME)
+    deduplicate(dep_name, temp_hash, upd_dep_name, flt_log_name, REMOTE_IMG_PREFIX, url_uid_name, url_uid_map)
     #use to debug
     #return 1
     logger.info('Uploading...')

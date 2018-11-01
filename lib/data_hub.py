@@ -32,12 +32,14 @@ def log_filter(log_name, label='pulp'):
     filtered_list = list()
     normal_filtered_list = list()
     sexy_filtered_list = list()
+    url_uid_map = {}
     with open(log_name, 'r') as f:
         for line in f.readlines():
             temp = json.loads(line.strip())
             #filter by uid
             if temp['uid'] == 1380304165:
                 continue
+            url_uid_map[temp['url'].split('/')[-1]] = temp['uid']
             if temp['label'][0]['data'] == None:
                 continue
             elif len(temp['label'][0]['data']) < NUM_CLASS:
@@ -60,7 +62,7 @@ def log_filter(log_name, label='pulp'):
         for item in normal_filtered_list:
             filtered_list.append(item[0])
     elif label == 'sexy':
-        sexy_num = 200000
+        sexy_num = 150000
         sexy_filtered_list = sorted(sexy_filtered_list, key=lambda x: x[1])
         #print('sexy len:', len(sexy_filtered_list))
         if len(sexy_filtered_list) > sexy_num:
@@ -70,7 +72,7 @@ def log_filter(log_name, label='pulp'):
         for item in sexy_filtered_list:
             filtered_list.append(item[0])
 
-    return filtered_list
+    return filtered_list, url_uid_map
                 
     
 def qhash(exec_path, img_list, url_prefix, output_path, thread_num=16):
@@ -80,7 +82,7 @@ def qhash(exec_path, img_list, url_prefix, output_path, thread_num=16):
     return os.system(hash_cmd)
     
 
-def deduplicate(basic_file, delta_file, updated_file, uniq_delta_list, remote_img_prefix):
+def deduplicate(basic_file, delta_file, updated_file, uniq_delta_list, remote_img_prefix, url_uid_name, url_uid_map):
     '''
     TODO: optimize code
     '''
@@ -112,8 +114,9 @@ def deduplicate(basic_file, delta_file, updated_file, uniq_delta_list, remote_im
         updated[hash_set[tmp_hash]] = dict()
         updated[hash_set[tmp_hash]]['md5'] = tmp_hash
         
-    with open(updated_file, 'w') as f1, open(uniq_delta_list, 'w') as f2:
+    with open(updated_file, 'w') as f1, open(uniq_delta_list, 'w') as f2, open(url_uid_name, 'a') as f3:
         json.dump(updated, f1, indent=2)
         for img in update_list:
             f2.write('{}\n'.format(os.path.join(remote_img_prefix,img)))
+            f3.write('{}\n'.format(url_uid_map[img]))
             
