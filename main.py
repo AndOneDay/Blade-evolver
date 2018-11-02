@@ -60,6 +60,7 @@ FLT_LOG_BKT = 'qpulp-pulp-list'
 # FLT_LOG_NAME = 'pulp_{}.lst'.format(''.join(YEST_DATE.split('-')))
 DEP_FILE_BKT = 'qpulp-depot'
 DEP_FILE_DOM = 'http://p66q12vsa.bkt.clouddn.com'
+UID_LOG_BKT = 'qpulp-uid-list'
 # DEP_FILE_NAME = 'base_depot_DailyDiary_{}.json'.format(''.join(BEF_YEST_DATE.split('-')))
 # UPD_DEP_FILE_NAME = 'base_depot_DailyDiary_{}.json'.format(''.join(YEST_DATE.split('-')))
 
@@ -256,7 +257,8 @@ def whole_routine():
     #return 1
     logger.info('Uploading...')
     exec_path = os.path.join(cur_path, 'tools', 'qshell')
-    if upload(exec_path, DEP_FILE_BKT, UPD_DEP_FILE_NAME, upd_dep_name, overwrite='true') or upload(exec_path, FLT_LOG_BKT, FLT_LOG_NAME, flt_log_name):
+    if upload(exec_path, DEP_FILE_BKT, UPD_DEP_FILE_NAME, upd_dep_name, overwrite='true') or upload(exec_path, FLT_LOG_BKT, FLT_LOG_NAME, flt_log_name)\
+            or upload(exec_path, UID_LOG_BKT, UID_LOG_NAME, url_uid_name, overwrite='true'):
         logger.error('Uploading result file failed.')
         return 1
     logger.info('PHASE[3] => success.')
