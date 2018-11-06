@@ -36,7 +36,7 @@ def log_filter(log_name, tmp_url_lst, tmp_uid_lst, label='pulp'):
     url_lst = []
     uid_lst = []
     with open(log_name, 'r') as f:
-        for line in f.readlines():
+        for line in f.xreadlines():
             temp = json.loads(line.strip())
             #filter by uid
             if temp['uid'] == 1380304165:
@@ -134,7 +134,7 @@ def deduplicate(basic_file, delta_file, updated_file, uniq_delta_list, remote_im
     index = np.argsort(url_lst)
     url_lst = url_lst[index]
     uid_lst = uid_lst[index]
-
+    update_list.sort()
     i = 0
     with open(url_uid_name, 'a') as f3:
         for img in update_list:
