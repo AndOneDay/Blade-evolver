@@ -17,6 +17,7 @@ import datetime
 import docopt
 import logging
 import ConfigParser
+import gc
 
 cur_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(cur_path,'lib'))
@@ -225,6 +226,7 @@ def whole_routine():
     if not filtered_list:
         logger.error('Filter image list failed.')
         return 1
+    gc.collect()
     logger.info('Filtered {} images.'.format(len(filtered_list)))
     temp_file = os.path.join(CACHE_PATH, '_temp_pulp_img.lst')
     temp_hash = os.path.join(CACHE_PATH, '_temp_pulp_hash.json')
