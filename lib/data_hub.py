@@ -2,7 +2,8 @@ from __future__ import division
 import os
 import sys
 import json
-
+import numpy as np
+import pickle
 
 NUM_CLASS = 3
 
@@ -28,18 +29,18 @@ def humanize_bytes(size_bytes, precision=1):
     return '%.*f %s' % (precision, size_bytes / factor, suffix)
 
 
-def log_filter(log_name, label='pulp'):
+def log_filter(log_name, tmp_url_lst, tmp_uid_lst, label='pulp'):
     filtered_list = list()
     normal_filtered_list = list()
     sexy_filtered_list = list()
-    url_uid_map = {}
+    url_lst = []
+    uid_lst = []
     with open(log_name, 'r') as f:
         for line in f.readlines():
             temp = json.loads(line.strip())
             #filter by uid
             if temp['uid'] == 1380304165:
                 continue
-            url_uid_map[temp['url'].split('/')[-1]] = temp['uid']
             if temp['label'][0]['data'] == None:
                 continue
             elif len(temp['label'][0]['data']) < NUM_CLASS:
@@ -50,10 +51,16 @@ def log_filter(log_name, label='pulp'):
                 scores_sorted = sorted(scores, key=lambda x: x[1])
                 if label == 'normal' and scores_sorted[-1][0] == 'normal':
                     normal_filtered_list.append((os.path.basename(temp['url']), scores_sorted[-1][1]))
+                    url_lst.append(os.path.basename(temp['url']))
+                    uid_lst.append(temp['uid'])
                 elif label == 'sexy' and scores_sorted[-1][0] == 'sexy':
                     sexy_filtered_list.append((os.path.basename(temp['url']), scores_sorted[-1][1]))
+                    url_lst.append(os.path.basename(temp['url']))
+                    uid_lst.append(temp['uid'])
                 elif scores_sorted[-1][0] == label:
                     filtered_list.append(os.path.basename(temp['url']))
+                    url_lst.append(os.path.basename(temp['url']))
+                    uid_lst.append(temp['uid'])
     if label == 'normal':
         normal_num = 100000
         normal_filtered_list = sorted(normal_filtered_list, key=lambda x: x[1])
@@ -71,8 +78,11 @@ def log_filter(log_name, label='pulp'):
         #sexy_filtered_list = random.sample(sexy_filtered_list, sexy_num)
         for item in sexy_filtered_list:
             filtered_list.append(item[0])
-
-    return filtered_list, url_uid_map
+    url_lst = np.array(url_lst)
+    uid_lst = np.array(uid_lst)
+    pickle.dump(url_lst, open(tmp_url_lst, 'wb'))
+    pickle.dump(uid_lst, open(tmp_uid_lst, 'wb'))
+    return filtered_list
                 
     
 def qhash(exec_path, img_list, url_prefix, output_path, thread_num=16):
@@ -82,7 +92,7 @@ def qhash(exec_path, img_list, url_prefix, output_path, thread_num=16):
     return os.system(hash_cmd)
     
 
-def deduplicate(basic_file, delta_file, updated_file, uniq_delta_list, remote_img_prefix, url_uid_name, url_uid_map):
+def deduplicate(basic_file, delta_file, updated_file, uniq_delta_list, remote_img_prefix, url_uid_name, tmp_url_lst, tmp_uid_lst):
     '''
     TODO: optimize code
     '''
@@ -114,9 +124,24 @@ def deduplicate(basic_file, delta_file, updated_file, uniq_delta_list, remote_im
         updated[hash_set[tmp_hash]] = dict()
         updated[hash_set[tmp_hash]]['md5'] = tmp_hash
         
-    with open(updated_file, 'w') as f1, open(uniq_delta_list, 'w') as f2, open(url_uid_name, 'a') as f3:
+    with open(updated_file, 'w') as f1, open(uniq_delta_list, 'w') as f2:
         json.dump(updated, f1, indent=2)
         for img in update_list:
             f2.write('{}\n'.format(os.path.join(remote_img_prefix,img)))
-            f3.write('{}\n'.format(url_uid_map[img]))
+
+    url_lst = pickle.load(open(tmp_url_lst, 'rb'))
+    uid_lst = pickle.load(open(tmp_uid_lst, 'rb'))
+    index = np.argsort(url_lst)
+    url_lst = url_lst[index]
+    uid_lst = uid_lst[index]
+
+    i = 0
+    with open(url_uid_name, 'a') as f3:
+        for img in update_list:
+            while i < len(url_lst):
+                if img == url_lst[i]:
+                    f3.write('{},{}\n'.format(url_lst[i], uid_lst[i]))
+                    i += 1
+                    break
+                i += 1
             

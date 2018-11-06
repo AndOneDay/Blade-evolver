@@ -130,6 +130,12 @@ def whole_routine():
     ORI_LOG_NAME = 'qpulp_origin_{}.json'.format(''.join(YEST_DATE.split('-')))
     FLT_LOG_NAME = '{}_{}.lst'.format(args['--cls'], ''.join(YEST_DATE.split('-')))
     UID_LOG_NAME = 'qpulp_uid_{}.csv'.format(''.join(YEST_DATE.split('-')))
+
+    tmp_uid_lst = 'tmp_uid_{}_{}.pkl'.format(args['--cls'], ''.join(YEST_DATE.split('-')))
+    tmp_url_lst = 'tmp_url_{}_{}.pkl'.format(args['--cls'], ''.join(YEST_DATE.split('-')))
+    tmp_uid_lst = os.path.join(CACHE_PATH, tmp_uid_lst)
+    tmp_url_lst = os.path.join(CACHE_PATH, tmp_url_lst)
+
     # if args.cls == 'normal':
     #     FLT_LOG_NAME = 'normal_{}.lst'.format(''.join(YEST_DATE.split('-')))
     DEP_FILE_NAME = 'base_depot_DailyDiary_{}.json'.format(''.join(BEF_YEST_DATE.split('-')))
@@ -215,7 +221,7 @@ def whole_routine():
 
     # ---- phase 3 ----
     logger.info('PHASE[3] => filtering interestesd logs and do deduplication')
-    filtered_list, url_uid_map = log_filter(os.path.join(CACHE_PATH, ORI_LOG_NAME), args['--cls'])
+    filtered_list = log_filter(os.path.join(CACHE_PATH, ORI_LOG_NAME), tmp_url_lst, tmp_uid_lst, args['--cls'])
     if not filtered_list:
         logger.error('Filter image list failed.')
         return 1
@@ -252,7 +258,7 @@ def whole_routine():
     upd_dep_name = os.path.join(CACHE_PATH, UPD_DEP_FILE_NAME)
     flt_log_name = os.path.join(CACHE_PATH, FLT_LOG_NAME)
     url_uid_name = os.path.join(CACHE_PATH, UID_LOG_NAME)
-    deduplicate(dep_name, temp_hash, upd_dep_name, flt_log_name, REMOTE_IMG_PREFIX, url_uid_name, url_uid_map)
+    deduplicate(dep_name, temp_hash, upd_dep_name, flt_log_name, REMOTE_IMG_PREFIX, url_uid_name, tmp_url_lst, tmp_uid_lst)
     #use to debug
     #return 1
     logger.info('Uploading...')
@@ -299,10 +305,6 @@ def file_exist(tool, bkt_file_name, bkt_name):
     logger.info('Checking log exsistance...')
     lstbkt_path = os.path.join(CACHE_PATH, bkt_name + '.listbucket')
     exec_path = os.path.join(cur_path, 'tools', tool)
-    # logger.info('Login qshell...')
-    # if log_in(exec_path, (AK, SK)):
-    #     logger.error('Logging failed.')
-    #     return False
     if list_bkt(exec_path, lstbkt_path, bucket=bkt_name):
         logger.error('Listing bucket failed.')
         return False
