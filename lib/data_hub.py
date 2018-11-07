@@ -4,6 +4,7 @@ import sys
 import json
 import numpy as np
 import pickle
+import gc
 
 NUM_CLASS = 3
 
@@ -134,7 +135,9 @@ def deduplicate(basic_file, delta_file, updated_file, uniq_delta_list, remote_im
     # index = np.argsort(url_lst)
     # url_lst = url_lst[index]
     # uid_lst = uid_lst[index]
+
     update_list = set(update_list)
+    gc.collect()
     with open(url_uid_name, 'a') as f3:
         with open(log_name, 'r') as f:
             for line in f.xreadlines():
