@@ -222,7 +222,7 @@ def whole_routine():
 
     # ---- phase 3 ----
     logger.info('PHASE[3] => filtering interestesd logs and do deduplication')
-    filtered_list = log_filter(os.path.join(CACHE_PATH, ORI_LOG_NAME), tmp_url_lst, tmp_uid_lst, args['--cls'])
+    filtered_list = log_filter(os.path.join(CACHE_PATH, ORI_LOG_NAME), args['--cls'])
     if not filtered_list:
         logger.error('Filter image list failed.')
         return 1
@@ -260,7 +260,7 @@ def whole_routine():
     upd_dep_name = os.path.join(CACHE_PATH, UPD_DEP_FILE_NAME)
     flt_log_name = os.path.join(CACHE_PATH, FLT_LOG_NAME)
     url_uid_name = os.path.join(CACHE_PATH, UID_LOG_NAME)
-    deduplicate(dep_name, temp_hash, upd_dep_name, flt_log_name, REMOTE_IMG_PREFIX, url_uid_name, tmp_url_lst, tmp_uid_lst)
+    deduplicate(dep_name, temp_hash, upd_dep_name, flt_log_name, REMOTE_IMG_PREFIX, url_uid_name, os.path.join(CACHE_PATH, ORI_LOG_NAME))
     #use to debug
     #return 1
     logger.info('Uploading...')
